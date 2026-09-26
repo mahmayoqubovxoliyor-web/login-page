@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Log in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --color-bg: #FFFFFF;
+    --color-text: #14141C;
+    --color-text-muted: #6B6B76;
+    --color-border: #E3E3E9;
+    --color-border-hover: #C7C7D1;
+    --color-primary: #5B4FE0;
+    --color-primary-hover: #4C41C9;
+    --color-primary-active: #3F35AC;
+    --color-primary-tint: #EFEDFC;
+    --color-success: #2FAE66;
+    --color-success-tint: #EAF7EF;
+    --color-error: #E5484D;
+    --color-error-tint: #FDEDEE;
+    --color-info-tint: #F1F0FE;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --shadow-focus: 0 0 0 4px var(--color-primary-tint);
+    --container-max: 1180px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  img { max-width: 100%; display: block; }
+  button { font-family: inherit; }
+  a { color: inherit; }
+  .skip-link { position: absolute; left: -999px; top: 0; background: var(--color-text); color: #fff; padding: 10px 16px; border-radius: var(--radius-sm); z-index: 100; }
+  .skip-link:focus { left: 16px; top: 16px; }
+  :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+  .site-header { max-width: var(--container-max); width: 100%; margin: 0 auto; padding: 28px 32px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .header-left { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); }
+  .brand-logo { width: 30px; height: 30px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  .brand-name { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px 9px 14px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: #fff; color: var(--color-text); font-size: 14px; font-weight: 500; cursor: pointer; transition: border-color .15s ease, background .15s ease, transform .1s ease; }
+  .back-btn:hover { border-color: var(--color-border-hover); background: #FAFAFC; }
+  .back-btn:active { transform: translateY(1px); }
+  .back-btn svg { width: 15px; height: 15px; }
+  .lang-select { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+  .lang-select:hover { border-color: var(--color-border-hover); background: #FAFAFC; }
+
+  .login-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+  .login-grid { width: 100%; max-width: 720px; display: flex; align-items: center; gap: 72px; }
+  .promo-card { width: 314px; height: 314px; min-width: 314px; border-radius: var(--radius-lg); overflow: hidden; position: relative; background: radial-gradient(circle at 25% 18%, rgba(255,255,255,.16), transparent 45%), linear-gradient(150deg, #4C41C9 0%, #5B4FE0 42%, #7A6FF0 78%, #9C8FFF 100%); }
+  .promo-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px; text-align: center; color: rgba(255,255,255,.92); }
+  .promo-placeholder svg { width: 40px; height: 40px; opacity: .85; }
+  .promo-placeholder .ph-title { font-size: 15px; font-weight: 600; }
+  .promo-placeholder .ph-sub { font-size: 12.5px; color: rgba(255,255,255,.7); max-width: 200px; line-height: 1.5; }
+
+  .login-panel { flex: 1; min-width: 0; }
+  .login-title { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .login-subtext { margin: 0 0 28px; font-size: 14.5px; color: var(--color-text-muted); }
+  .login-subtext a, .plain-link { color: var(--color-primary); font-weight: 600; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; font-size: inherit; font-family: inherit; }
+  .login-subtext a:hover, .plain-link:hover { text-decoration: underline; }
+  .step-desc { margin: 0 0 20px; font-size: 13.5px; color: var(--color-text-muted); line-height: 1.55; }
+  .demo-note { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: #B23237; background: var(--color-error-tint); padding: 7px 14px; border-radius: var(--radius-pill); margin: 0 0 22px; }
+  .demo-note svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-input-wrap { position: relative; }
+  .field input { width: 100%; height: 50px; padding: 0 18px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: #fff; font-size: 14.5px; color: var(--color-text); transition: border-color .15s ease, box-shadow .15s ease; }
+  .field input::placeholder { color: #A7A7B3; }
+  .field input:hover { border-color: var(--color-border-hover); }
+  .field input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--shadow-focus); }
+  .field.has-error input { border-color: var(--color-error); }
+  .field.has-error input:focus { box-shadow: 0 0 0 4px var(--color-error-tint); }
+  .field input[type="password"] { padding-right: 46px; }
+  .toggle-pw { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: none; background: transparent; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: background .15s ease, color .15s ease; }
+  .toggle-pw:hover { background: #F4F4F7; color: var(--color-text); }
+  .toggle-pw svg { width: 18px; height: 18px; }
+  .field-error { font-size: 12.5px; color: var(--color-error); padding-left: 18px; display: none; }
+  .field.has-error .field-error { display: block; }
+  .field-hint { font-size: 12px; color: var(--color-text-muted); padding-left: 18px; }
+
+  .form-alert { display: none; align-items: flex-start; gap: 9px; font-size: 13.5px; padding: 11px 16px; border-radius: var(--radius-sm); line-height: 1.5; }
+  .form-alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .form-alert.show { display: flex; }
+  .form-alert.error { background: var(--color-error-tint); color: #B23237; }
+  .form-alert.success { background: var(--color-success-tint); color: #1F7A48; }
+  .form-alert.info { background: var(--color-info-tint); color: #4C41C9; }
+  .form-alert code { background: rgba(0,0,0,.06); padding: 1px 6px; border-radius: 5px; font-weight: 700; letter-spacing: .04em; }
+
+  .submit-btn { height: 50px; border: none; border-radius: var(--radius-pill); background: var(--color-primary); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; transition: background .15s ease, transform .1s ease, opacity .15s ease; }
+  .submit-btn:hover:not(:disabled) { background: var(--color-primary-hover); }
+  .submit-btn:active:not(:disabled) { background: var(--color-primary-active); transform: translateY(1px); }
+  .submit-btn:disabled { opacity: .75; cursor: not-allowed; }
+  .submit-btn.secondary { background: #fff; color: var(--color-text); border: 1px solid var(--color-border); }
+  .submit-btn.secondary:hover:not(:disabled) { border-color: var(--color-border-hover); background: #FAFAFC; }
+  .spinner { width: 17px; height: 17px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite; display: none; }
+  .submit-btn.secondary .spinner { border-color: rgba(0,0,0,.15); border-top-color: var(--color-text); }
+  .submit-btn.loading .spinner { display: inline-block; }
+  .submit-btn.loading .btn-label { opacity: .85; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 1.4s; } .back-btn, .lang-select, .field input, .submit-btn, .toggle-pw { transition: none; } }
+
+  .forgot-link { display: inline-block; margin-top: 4px; font-size: 13.5px; color: var(--color-text); text-decoration: none; font-weight: 500; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; }
+  .forgot-link:hover { color: var(--color-primary); text-decoration: underline; }
+  .back-step { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--color-text-muted); background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 16px; font-family: inherit; }
+  .back-step:hover { color: var(--color-text); }
+  .back-step svg { width: 14px; height: 14px; }
+
+  .session-card { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+  .session-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 22px; }
+  .session-email { font-weight: 600; font-size: 15px; word-break: break-all; }
+
+  .site-footer { max-width: var(--container-max); width: 100%; margin: 0 auto; padding: 24px 32px 32px; border-top: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--color-text-muted); }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .footer-links a { text-decoration: underline; color: var(--color-text-muted); cursor: pointer; }
+  .footer-links a:hover { color: var(--color-text); }
+  .footer-recaptcha { max-width: 560px; line-height: 1.6; }
+  .footer-copyright { white-space: nowrap; }
+
+  @media (max-width: 860px) { .login-grid { gap: 44px; } }
+  @media (max-width: 680px) {
+    .site-header { padding: 20px 20px 0; }
+    .login-main { padding: 28px 20px; }
+    .login-grid { flex-direction: column; align-items: stretch; gap: 28px; }
+    .promo-card { width: 100%; min-width: 0; height: 200px; }
+    .login-title { font-size: 26px; }
+    .site-footer { padding: 20px 20px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
+    .footer-copyright { white-space: normal; }
+  }
+  .toast { display: none; align-items: center; justify-content: space-between; gap: 16px; width: 100%; background: #A7F3D0; color: #0B4A34; padding: 16px 28px; font-size: 15px; font-weight: 500; }
+  .toast.show { display: flex; }
+  .toast-close { border: none; background: transparent; color: #0B4A34; opacity: .7; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; transition: opacity .15s ease, background .15s ease; }
+  .toast-close:hover { opacity: 1; background: rgba(11,74,52,.08); }
+  .toast-close svg { width: 18px; height: 18px; }
+
+  @media (max-width: 680px) { .toast { padding: 14px 18px; font-size: 14px; } }
+  @media (max-width: 380px) { .header-left { gap: 10px; } .brand-name { font-size: 15.5px; } }
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastMsg"></span>
+  <button class="toast-close" id="toastClose" type="button" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+<a class="skip-link" href="#primary-form">Skip to form</a>
+
+<header class="site-header">
+  <div class="header-left">
+    <a class="brand" href="#" id="brandLink" aria-label="Homepage">
+      <img class="brand-logo" id="brandLogo" alt="" />
+      <span class="brand-name" id="brandName"></span>
+    </a>
+    <button class="back-btn" id="backBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </button>
+  </div>
+  <button class="lang-select" id="langSelect" type="button">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.8 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.8-3.8-9S9.5 5.6 12 3z"/></svg>
+    <span id="langLabel"></span>
+  </button>
+</header>
+
+<main class="login-main">
+  <div class="login-grid">
+    <div class="promo-card" id="promoCard" aria-hidden="true">
+      <div class="promo-placeholder" id="promoPlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-9 9"/></svg>
+        <div class="ph-title">Your promotional image</div>
+        <div class="ph-sub">Set CONFIG.promoImageUrl to 314×314 (cropped to fill)</div>
+      </div>
+      <img class="promo-img" id="promoImg" alt="" hidden style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+    </div>
+
+    <div class="login-panel" id="panel"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-recaptcha" id="footerRecaptcha"></div>
+  <div class="footer-links">
+    <a id="privacyLink">Privacy Policy</a>
+    <a id="termsLink">Terms of Use</a>
+    <a id="dmcaLink">Copyright Policy / DMCA</a>
+  </div>
+  <div class="footer-copyright" id="footerCopyright"></div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     CONFIG — rebrand here.
+     ============================================================ */
+  const CONFIG = {
+    brandName: 'Novaframe',
+    logoUrl: '',
+    homeHref: '#',
+    backHref: '#',
+    promoImageUrl: 'data:image/jpeg;base64,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',
+    language: 'English',
+    primaryColor: '#5B4FE0',
+    // Where to send the browser after a successful password change.
+    postPasswordChangeRedirect: 'https://www.motionelements.com/ru/',
+    footer: {
+      recaptchaHtml: 'This site is protected by reCAPTCHA and the <a href="#" id="gpp">Google Privacy Policy</a> and <a href="#" id="gtos">Terms of Service</a> apply.',
+      copyright: '© ' + new Date().getFullYear() + ' Novaframe. All trademarks are the property of their respective owners.'
+    }
+  };
+
+  /* ============================================================
+     REAL BACKEND
+     This calls the Netlify Functions backend at
+     /api/auth/signup, /api/auth/login, /api/auth/change-password.
+     Passwords are hashed server-side with scrypt and never touch
+     localStorage — only a lightweight client-side session marker
+     (just the email + timestamp, not a secret) is kept there so the
+     page remembers you're signed in across reloads.
+     ============================================================ */
+  const SESSION_KEY = 'novaframe_session_v1';
+
+  async function callApi(path, body) {
+    let res;
+    try {
+      res = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      throw new Error('Could not reach the server. Please try again.');
+    }
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* empty body */ }
+    if (!res.ok) throw new Error(data.message || 'Something went wrong.');
+    return data;
+  }
+
+  const api = {
+    async signUp(email, password) {
+      const data = await callApi('/api/auth/signup', { email, password });
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ email: data.email, since: Date.now() }));
+      return data;
+    },
+    async logIn(email, password) {
+      const data = await callApi('/api/auth/login', { email, password });
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ email: data.email, since: Date.now() }));
+      return data;
+    },
+    async changePassword(email, oldPassword, newPassword) {
+      const data = await callApi('/api/auth/change-password', { email, oldPassword, newPassword });
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ email: data.email, since: Date.now() }));
+      return data;
+    },
+    getSession() {
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+      catch (e) { return null; }
+    },
+    logOut() {
+      localStorage.removeItem(SESSION_KEY);
+    }
+  };
+
+  /* ---------------- Chrome (logo / back / lang / footer) ---------------- */
+  function applyChrome() {
+    document.title = 'Log in · ' + CONFIG.brandName;
+    document.documentElement.style.setProperty('--color-primary', CONFIG.primaryColor);
+    document.getElementById('brandName').textContent = CONFIG.brandName;
+    document.getElementById('brandLink').href = CONFIG.homeHref;
+    document.getElementById('backBtn').dataset.href = CONFIG.backHref;
+    document.getElementById('langLabel').textContent = CONFIG.language;
+
+    const logoImg = document.getElementById('brandLogo');
+    if (CONFIG.logoUrl) {
+      logoImg.src = CONFIG.logoUrl;
+    } else {
+      const initial = CONFIG.brandName.trim().charAt(0).toUpperCase();
+      logoImg.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><rect width="30" height="30" rx="8" fill="' + CONFIG.primaryColor + '"/><text x="15" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle">' + initial + '</text></svg>'
+      );
+    }
+    logoImg.alt = CONFIG.brandName + ' logo';
+
+    const promoImg = document.getElementById('promoImg');
+    if (CONFIG.promoImageUrl) {
+      promoImg.src = CONFIG.promoImageUrl;
+      promoImg.hidden = false;
+      document.getElementById('promoPlaceholder').hidden = true;
+    }
+
+    document.getElementById('footerRecaptcha').innerHTML = CONFIG.footer.recaptchaHtml;
+    document.getElementById('footerCopyright').textContent = CONFIG.footer.copyright;
+  }
+  applyChrome();
+  document.getElementById('backBtn').addEventListener('click', function () {
+    window.location.href = this.dataset.href || '#';
+  });
+
+  document.getElementById('toastClose').addEventListener('click', function () {
+    document.getElementById('toast').classList.remove('show');
+  });
+  function showToast(msg) {
+    document.getElementById('toastMsg').textContent = msg;
+    document.getElementById('toast').classList.add('show');
+  }
+  function displayNameFromEmail(email) {
+    const local = (email || '').split('@')[0];
+    const parts = local.split(/[._\-+0-9]+/).filter(Boolean);
+    const name = parts[0] || local;
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  /* ---------------- Router / view state ---------------- */
+  const panel = document.getElementById('panel');
+  let view = api.getSession() ? 'home' : 'login';
+  let pendingChangeEmail = '';
+
+  function go(v) { view = v; render(); }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function eyeSvg(open) {
+    return open
+      ? '<path d="M3 3l18 18M10.6 10.7a3 3 0 004.2 4.2M6.5 6.6C4 8.3 2.3 10.6 1.5 12c1.6 2.8 5 7.5 10.5 7.5 1.9 0 3.6-.5 5-1.3M17.4 17.4C19.6 15.9 21 12 21 12s-1-2-3-3.8"/>'
+      : '<path d="M1.5 12s4-7.5 10.5-7.5S22.5 12 22.5 12s-4 7.5-10.5 7.5S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  function passwordFieldHtml(id, placeholder) {
+    return (
+      '<div class="field-input-wrap">' +
+        '<input type="password" id="' + id + '" placeholder="' + placeholder + '" autocomplete="new-password" aria-describedby="' + id + 'Error" />' +
+        '<button type="button" class="toggle-pw" data-toggle-for="' + id + '" aria-label="Show password" aria-pressed="false">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + eyeSvg(false) + '</svg>' +
+        '</button>' +
+      '</div>'
+    );
+  }
+
+  function wireToggles(root) {
+    root.querySelectorAll('[data-toggle-for]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const input = document.getElementById(btn.dataset.toggleFor);
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        btn.setAttribute('aria-pressed', String(!visible));
+        btn.setAttribute('aria-label', !visible ? 'Hide password' : 'Show password');
+        btn.querySelector('svg').innerHTML = eyeSvg(!visible);
+      });
+    });
+  }
+
+  function setFieldError(fieldEl, errorEl, message) {
+    if (message) { fieldEl.classList.add('has-error'); errorEl.textContent = message; }
+    else { fieldEl.classList.remove('has-error'); errorEl.textContent = ''; }
+  }
+
+  function alertHtml(type, html) {
+    const icon = type === 'success'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>'
+      : type === 'info'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>';
+    return '<div class="form-alert show ' + type + '" role="status">' + icon + '<span>' + html + '</span></div>';
+  }
+
+  function setLoading(btn, loading) {
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+  }
+
+  /* ---------------- Views ---------------- */
+  function renderLogin() {
+    panel.innerHTML =
+      '<h1 class="login-title">Log in</h1>' +
+      '<p class="login-subtext">Not a member? <a id="toSignup">Sign up</a></p>' +
+      '<form id="primary-form" novalidate>' +
+        '<div class="field" id="emailField">' +
+          '<div class="field-input-wrap"><input type="email" id="email" placeholder="Email" autocomplete="email" /></div>' +
+          '<span class="field-error" id="emailError" role="alert"></span>' +
+        '</div>' +
+        '<div class="field" id="passwordField">' +
+          passwordFieldHtml('password', 'Password') +
+          '<span class="field-error" id="passwordError" role="alert"></span>' +
+        '</div>' +
+        '<div id="alertSlot"></div>' +
+        '<button class="submit-btn" id="submitBtn" type="submit"><span class="spinner"></span><span class="btn-label">Log in</span></button>' +
+        '<button type="button" class="forgot-link" id="toForgot">Forgot your password?</button>' +
+      '</form>';
+
+    wireToggles(panel);
+    document.getElementById('toSignup').addEventListener('click', () => go('signup'));
+    document.getElementById('toForgot').addEventListener('click', () => go('forgot'));
+
+    const form = document.getElementById('primary-form');
+    const emailField = document.getElementById('emailField');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const pwField = document.getElementById('passwordField');
+    const pwError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertSlot = document.getElementById('alertSlot');
+
+    function validate() {
+      let ok = true;
+      const email = emailInput.value.trim();
+      if (!email) { setFieldError(emailField, emailError, 'Enter your email address.'); ok = false; }
+      else if (!EMAIL_RE.test(email)) { setFieldError(emailField, emailError, 'Enter a valid email address.'); ok = false; }
+      else setFieldError(emailField, emailError, '');
+      if (!document.getElementById('password').value) { setFieldError(pwField, pwError, 'Enter your password.'); ok = false; }
+      else setFieldError(pwField, pwError, '');
+      return ok;
+    }
+    emailInput.addEventListener('input', () => { if (emailField.classList.contains('has-error')) validate(); });
+    document.getElementById('password').addEventListener('input', () => { if (pwField.classList.contains('has-error')) validate(); });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      alertSlot.innerHTML = '';
+      if (!validate()) return;
+      setLoading(submitBtn, true);
+      try {
+        await api.logIn(emailInput.value.trim(), document.getElementById('password').value);
+        pendingChangeEmail = emailInput.value.trim();
+        go('reset');
+      } catch (err) {
+        alertSlot.innerHTML = alertHtml('error', err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+  }
+
+  function renderSignup() {
+    panel.innerHTML =
+      '<h1 class="login-title">Create account</h1>' +
+      '<p class="login-subtext">Already have an account? <a id="toLogin">Log in</a></p>' +
+      '<form id="primary-form" novalidate>' +
+        '<div class="field" id="emailField">' +
+          '<div class="field-input-wrap"><input type="email" id="email" placeholder="Email" autocomplete="email" /></div>' +
+          '<span class="field-error" id="emailError" role="alert"></span>' +
+        '</div>' +
+        '<div class="field" id="passwordField">' +
+          passwordFieldHtml('password', 'Password (min. 8 characters)') +
+          '<span class="field-error" id="passwordError" role="alert"></span>' +
+        '</div>' +
+        '<div class="field" id="confirmField">' +
+          passwordFieldHtml('confirm', 'Confirm password') +
+          '<span class="field-error" id="confirmError" role="alert"></span>' +
+        '</div>' +
+        '<div id="alertSlot"></div>' +
+        '<button class="submit-btn" id="submitBtn" type="submit"><span class="spinner"></span><span class="btn-label">Sign up</span></button>' +
+      '</form>';
+
+    wireToggles(panel);
+    document.getElementById('toLogin').addEventListener('click', () => go('login'));
+
+    const form = document.getElementById('primary-form');
+    const emailField = document.getElementById('emailField');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const pwField = document.getElementById('passwordField');
+    const pwError = document.getElementById('passwordError');
+    const confirmField = document.getElementById('confirmField');
+    const confirmError = document.getElementById('confirmError');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertSlot = document.getElementById('alertSlot');
+
+    function validate() {
+      let ok = true;
+      const email = emailInput.value.trim();
+      const pw = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      if (!email) { setFieldError(emailField, emailError, 'Enter your email address.'); ok = false; }
+      else if (!EMAIL_RE.test(email)) { setFieldError(emailField, emailError, 'Enter a valid email address.'); ok = false; }
+      else setFieldError(emailField, emailError, '');
+
+      if (!pw) { setFieldError(pwField, pwError, 'Choose a password.'); ok = false; }
+      else if (pw.length < 8) { setFieldError(pwField, pwError, 'Use at least 8 characters.'); ok = false; }
+      else setFieldError(pwField, pwError, '');
+
+      if (!confirm) { setFieldError(confirmField, confirmError, 'Confirm your password.'); ok = false; }
+      else if (confirm !== pw) { setFieldError(confirmField, confirmError, 'Passwords don\u2019t match.'); ok = false; }
+      else setFieldError(confirmField, confirmError, '');
+
+      return ok;
+    }
+    ['email', 'password', 'confirm'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', function () {
+        const fieldEl = id === 'email' ? emailField : id === 'password' ? pwField : confirmField;
+        if (fieldEl.classList.contains('has-error')) validate();
+      });
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      alertSlot.innerHTML = '';
+      if (!validate()) return;
+      setLoading(submitBtn, true);
+      try {
+        await api.signUp(emailInput.value.trim(), document.getElementById('password').value);
+        alertSlot.innerHTML = alertHtml('success', 'Account created. Redirecting\u2026');
+        setTimeout(() => go('home'), 700);
+      } catch (err) {
+        alertSlot.innerHTML = alertHtml('error', err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+  }
+
+  function renderForgot() {
+    panel.innerHTML =
+      '<button class="back-step" id="toLoginStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to log in</button>' +
+      '<h1 class="login-title">Change password</h1>' +
+      '<p class="step-desc">Please log in first to change your password.</p>' +
+      '<form id="primary-form" novalidate>' +
+        '<div class="field" id="emailField">' +
+          '<div class="field-input-wrap"><input type="email" id="email" placeholder="Email" autocomplete="email" /></div>' +
+          '<span class="field-error" id="emailError" role="alert"></span>' +
+        '</div>' +
+        '<div class="field" id="passwordField">' +
+          passwordFieldHtml('password', 'Password') +
+          '<span class="field-error" id="passwordError" role="alert"></span>' +
+        '</div>' +
+        '<div id="alertSlot"></div>' +
+        '<button class="submit-btn" id="submitBtn" type="submit"><span class="spinner"></span><span class="btn-label">Continue</span></button>' +
+      '</form>';
+
+    wireToggles(panel);
+    document.getElementById('toLoginStep').addEventListener('click', () => go('login'));
+
+    const form = document.getElementById('primary-form');
+    const emailField = document.getElementById('emailField');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const pwField = document.getElementById('passwordField');
+    const pwError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertSlot = document.getElementById('alertSlot');
+
+    function validate() {
+      let ok = true;
+      const email = emailInput.value.trim();
+      if (!email) { setFieldError(emailField, emailError, 'Enter your email address.'); ok = false; }
+      else if (!EMAIL_RE.test(email)) { setFieldError(emailField, emailError, 'Enter a valid email address.'); ok = false; }
+      else setFieldError(emailField, emailError, '');
+      if (!document.getElementById('password').value) { setFieldError(pwField, pwError, 'Enter your current password.'); ok = false; }
+      else setFieldError(pwField, pwError, '');
+      return ok;
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      alertSlot.innerHTML = '';
+      if (!validate()) return;
+      setLoading(submitBtn, true);
+      try {
+        // Re-uses the real login check — this is how we confirm it's
+        // really the account owner before letting them set a new password.
+        await api.logIn(emailInput.value.trim(), document.getElementById('password').value);
+        pendingChangeEmail = emailInput.value.trim();
+        go('reset');
+      } catch (err) {
+        alertSlot.innerHTML = alertHtml('error', err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+  }
+
+  function renderReset() {
+    panel.innerHTML =
+      '<button class="back-step" id="toForgotStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>' +
+      '<h1 class="login-title">Change password</h1>' +
+      '<p class="step-desc">Signed in as <strong>' + pendingChangeEmail + '</strong>. Enter your old password, then your new one.</p>' +
+      '<form id="primary-form" novalidate>' +
+        '<div class="field" id="oldField">' +
+          passwordFieldHtml('oldPassword', 'Old password') +
+          '<span class="field-error" id="oldError" role="alert"></span>' +
+        '</div>' +
+        '<div class="field" id="newField">' +
+          passwordFieldHtml('newPassword', 'New password (min. 8 characters)') +
+          '<span class="field-error" id="newError" role="alert"></span>' +
+        '</div>' +
+        '<div id="alertSlot"></div>' +
+        '<button class="submit-btn" id="submitBtn" type="submit"><span class="spinner"></span><span class="btn-label">Update password</span></button>' +
+      '</form>';
+
+    wireToggles(panel);
+    document.getElementById('toForgotStep').addEventListener('click', () => go('forgot'));
+
+    const form = document.getElementById('primary-form');
+    const oldField = document.getElementById('oldField');
+    const oldError = document.getElementById('oldError');
+    const newField = document.getElementById('newField');
+    const newError = document.getElementById('newError');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertSlot = document.getElementById('alertSlot');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      alertSlot.innerHTML = '';
+      let ok = true;
+      const oldPw = document.getElementById('oldPassword').value;
+      const newPw = document.getElementById('newPassword').value;
+      if (!oldPw) { setFieldError(oldField, oldError, 'Enter your old password.'); ok = false; }
+      else setFieldError(oldField, oldError, '');
+      if (!newPw) { setFieldError(newField, newError, 'Enter a new password.'); ok = false; }
+      else if (newPw.length < 8) { setFieldError(newField, newError, 'Use at least 8 characters.'); ok = false; }
+      else if (newPw === oldPw) { setFieldError(newField, newError, 'New password must be different from the old one.'); ok = false; }
+      else setFieldError(newField, newError, '');
+      if (!ok) return;
+
+      setLoading(submitBtn, true);
+      try {
+        await api.changePassword(pendingChangeEmail, oldPw, newPw);
+        showToast('Welcome back, ' + displayNameFromEmail(pendingChangeEmail));
+        const url = CONFIG.postPasswordChangeRedirect;
+        alertSlot.innerHTML = alertHtml('success', 'Password updated. Redirecting\u2026');
+        setTimeout(function () {
+          window.location.href = url;
+        }, 1200);
+      } catch (err) {
+        alertSlot.innerHTML = alertHtml('error', err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+  }
+
+  function renderHome() {
+    const session = api.getSession();
+    if (!session) { go('login'); return; }
+    const initial = session.email.trim().charAt(0).toUpperCase();
+    panel.innerHTML =
+      '<h1 class="login-title">Welcome back</h1>' +
+      '<div class="session-card">' +
+        '<div class="session-avatar">' + initial + '</div>' +
+        '<div><div class="session-email">' + session.email + '</div>' +
+        '<div class="step-desc" style="margin-top:4px">Signed in ' + new Date(session.since).toLocaleString() + '</div></div>' +
+        '<button class="submit-btn secondary" id="logoutBtn" style="width:auto;padding:0 24px">Log out</button>' +
+      '</div>';
+    document.getElementById('logoutBtn').addEventListener('click', function () {
+      api.logOut();
+      go('login');
+    });
+  }
+
+  function render() {
+    if (view === 'login') renderLogin();
+    else if (view === 'signup') renderSignup();
+    else if (view === 'forgot') renderForgot();
+    else if (view === 'reset') renderReset();
+    else if (view === 'home') renderHome();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

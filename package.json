@@ -1,0 +1,9 @@
+{
+  "name": "login-page-netlify",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Login page with Netlify Functions and Netlify Blobs backend.",
+  "dependencies": {
+    "@netlify/blobs": "^10.0.0"
+  }
+}
