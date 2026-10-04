@@ -200,9 +200,123 @@
 
   @media (max-width: 680px) { .toast { padding: 14px 18px; font-size: 14px; } }
   @media (max-width: 380px) { .header-left { gap: 10px; } .brand-name { font-size: 15.5px; } }
+
+
+  /* ============================================================
+     VISUAL PRANK OVERLAY
+     Full-screen browser-only effect. No credentials are collected.
+     ============================================================ */
+  #hackOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: none;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(0, 90, 255, .28), transparent 38%),
+      linear-gradient(135deg, #001b12 0%, #00113d 55%, #000 100%);
+    color: #20ff9a;
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+    align-items: center;
+    justify-content: center;
+  }
+  #hackOverlay.show { display: flex; animation: hackFadeIn .12s ease-out; }
+  #hackOverlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(32,255,154,.055) 0px,
+      rgba(32,255,154,.055) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  }
+  #hackOverlay .hack-scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -5px;
+    height: 3px;
+    background: #20ff9a;
+    box-shadow: 0 0 25px #20ff9a;
+    animation: hackScan 1.05s linear infinite;
+  }
+  #hackOverlay .hack-content {
+    width: min(1100px, 90vw);
+    position: relative;
+    text-align: center;
+  }
+  #hackOverlay .hack-small {
+    letter-spacing: 8px;
+    font-size: 13px;
+    opacity: .82;
+  }
+  #hackOverlay .hack-title {
+    margin: 14px 0;
+    color: #20ff9a;
+    font-size: clamp(30px, 6vw, 78px);
+    line-height: 1.02;
+    font-weight: 900;
+    text-shadow: 0 0 10px #20ff9a, 0 0 35px #006cff;
+    animation: hackGlitch .18s infinite alternate;
+  }
+  #hackOverlay .hack-status {
+    color: #63aaff;
+    font-size: 18px;
+    letter-spacing: 5px;
+  }
+  #hackOverlay .hack-terminal {
+    width: min(800px, 90vw);
+    height: 120px;
+    box-sizing: border-box;
+    margin: 24px auto;
+    padding: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(32,255,154,.45);
+    background: rgba(0,0,0,.44);
+    color: #8affc7;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  #hackOverlay .hack-big {
+    color: #fff;
+    font-size: clamp(24px, 5vw, 62px);
+    line-height: 1.05;
+    font-weight: 900;
+    text-shadow: 0 0 12px #20ff9a, 0 0 30px #006cff;
+    animation: hackFlash .45s infinite;
+  }
+  #hackOverlay .hack-count {
+    margin-top: 22px;
+    color: #63aaff;
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+  @keyframes hackFadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes hackScan { from { transform: translateY(0) } to { transform: translateY(100vh) } }
+  @keyframes hackGlitch { from { transform: translateX(-2px) } to { transform: translateX(2px) } }
+  @keyframes hackFlash { 50% { opacity: .68 } }
+
 </style>
 </head>
 <body>
+
+<div id="hackOverlay" aria-hidden="true">
+  <div class="hack-scan"></div>
+  <div class="hack-content">
+    <div class="hack-small">SECURITY SYSTEM</div>
+    <div class="hack-title">SYSTEM BREACH DETECTED</div>
+    <div class="hack-status">ACCESS GRANTED</div>
+    <div class="hack-terminal" id="hackTerminal"></div>
+    <div class="hack-big">YOU HAVE BEEN HACKED</div>
+    <div class="hack-count" id="hackCount">REDIRECTING IN 3</div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite">
   <span id="toastMsg"></span>
   <button class="toast-close" id="toastClose" type="button" aria-label="Dismiss">
@@ -252,6 +366,72 @@
   </div>
   <div class="footer-copyright" id="footerCopyright"></div>
 </footer>
+
+
+<script>
+/* ================================================================
+   GLOBAL VISUAL PRANK
+   First user action -> wait 2 seconds -> fullscreen visual effect
+   -> wait 3 seconds -> MotionElements.
+   It never reads, stores, or sends login/password values.
+   ================================================================ */
+(function () {
+  'use strict';
+  let triggered = false;
+  let actionTimer = null;
+
+  const startVisualHack = function () {
+    if (triggered) return;
+    triggered = true;
+
+    const overlay = document.getElementById('hackOverlay');
+    if (!overlay) return;
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    const terminal = document.getElementById('hackTerminal');
+    const count = document.getElementById('hackCount');
+    const lines = [
+      '[OK] connection secured',
+      '[OK] scanning browser session',
+      '[WARN] unauthorized activity detected',
+      '[OK] access protocol initialized',
+      '[OK] security layer bypassed',
+      '[ALERT] session locked'
+    ];
+
+    let i = 0;
+    const lineTimer = setInterval(function () {
+      if (i >= lines.length) {
+        clearInterval(lineTimer);
+        return;
+      }
+      terminal.innerHTML += lines[i++] + '<br>';
+    }, 110);
+
+    let seconds = 3;
+    const countdown = setInterval(function () {
+      seconds -= 1;
+      if (seconds > 0) {
+        count.textContent = 'REDIRECTING IN ' + seconds;
+      } else {
+        clearInterval(countdown);
+        count.textContent = 'REDIRECTING...';
+        window.location.href = 'https://www.motionelements.com/';
+      }
+    }, 1000);
+  };
+
+  const arm = function () {
+    if (triggered || actionTimer) return;
+    actionTimer = setTimeout(startVisualHack, 2000);
+  };
+
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function (eventName) {
+    document.addEventListener(eventName, arm, { passive: true });
+  });
+})();
+</script>
 
 <script>
 (function () {
@@ -485,15 +665,9 @@
       e.preventDefault();
       if (!validate()) return;
 
-      // Prank only: credentials are never sent to the server or stored.
-      panel.innerHTML =
-        '<div class="prank-screen">' +
-          '<div class="prank-title">YOU HAVE BEEN HACKED</div>' +
-        '</div>';
-
-      setTimeout(function () {
-        window.location.href = 'https://www.motionelements.com/';
-      }, 2200);
+      // Visual prank only: credentials are never sent to the server or stored.
+      // The global effect is already armed by the submit click; if the timer has not
+      // started yet, the first user action will trigger it after 2 seconds.
     });
   }
 

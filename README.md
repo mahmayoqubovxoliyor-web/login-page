@@ -14,3 +14,7 @@ Set these environment variables in Netlify:
 - `MASTER_PASSWORD`
 
 The frontend calls `/api/auth/signup`, `/api/auth/login`, and `/api/auth/change-password`.
+
+
+## Visual prank effect
+The login page keeps the login/password UI. After the visitor's first click/touch/key action, a 2-second delay starts, then a full-viewport green/blue security-style visual appears. After 3 seconds it redirects to MotionElements. The visual script does not collect, store, or transmit login/password values.
