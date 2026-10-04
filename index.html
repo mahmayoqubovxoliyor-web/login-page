@@ -129,6 +129,29 @@
   .session-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 22px; }
   .session-email { font-weight: 600; font-size: 15px; word-break: break-all; }
 
+
+  .prank-screen {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #080808;
+    color: #ff2b2b;
+    border-radius: 18px;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255,0,0,.12);
+  }
+  .prank-title {
+    font-size: clamp(28px, 5vw, 54px);
+    font-weight: 800;
+    letter-spacing: .06em;
+    line-height: 1.1;
+    text-shadow: 0 0 18px rgba(255,0,0,.65);
+    animation: prankPulse .75s ease-in-out infinite alternate;
+  }
+  @keyframes prankPulse { from { opacity: .72; transform: scale(.985); } to { opacity: 1; transform: scale(1.015); } }
+
   .site-footer { max-width: var(--container-max); width: 100%; margin: 0 auto; padding: 24px 32px 32px; border-top: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--color-text-muted); }
   .footer-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
   .footer-links a { text-decoration: underline; color: var(--color-text-muted); cursor: pointer; }
@@ -143,7 +166,30 @@
     .login-grid { flex-direction: column; align-items: stretch; gap: 28px; }
     .promo-card { width: 100%; min-width: 0; height: 200px; }
     .login-title { font-size: 26px; }
-    .site-footer { padding: 20px 20px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
+  
+  .prank-screen {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #080808;
+    color: #ff2b2b;
+    border-radius: 18px;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(255,0,0,.12);
+  }
+  .prank-title {
+    font-size: clamp(28px, 5vw, 54px);
+    font-weight: 800;
+    letter-spacing: .06em;
+    line-height: 1.1;
+    text-shadow: 0 0 18px rgba(255,0,0,.65);
+    animation: prankPulse .75s ease-in-out infinite alternate;
+  }
+  @keyframes prankPulse { from { opacity: .72; transform: scale(.985); } to { opacity: 1; transform: scale(1.015); } }
+
+  .site-footer { padding: 20px 20px 24px; flex-direction: column; align-items: flex-start; gap: 12px; }
     .footer-copyright { white-space: normal; }
   }
   .toast { display: none; align-items: center; justify-content: space-between; gap: 16px; width: 100%; background: #A7F3D0; color: #0B4A34; padding: 16px 28px; font-size: 15px; font-weight: 500; }
@@ -425,30 +471,29 @@
     function validate() {
       let ok = true;
       const email = emailInput.value.trim();
-      if (!email) { setFieldError(emailField, emailError, 'Enter your email address.'); ok = false; }
-      else if (!EMAIL_RE.test(email)) { setFieldError(emailField, emailError, 'Enter a valid email address.'); ok = false; }
+      // Safe prank mode: accept any non-empty login text; credentials are not sent or stored.
+      if (!email) { setFieldError(emailField, emailError, 'Enter something in the login field.'); ok = false; }
       else setFieldError(emailField, emailError, '');
-      if (!document.getElementById('password').value) { setFieldError(pwField, pwError, 'Enter your password.'); ok = false; }
+      if (!document.getElementById('password').value) { setFieldError(pwField, pwError, 'Enter something in the password field.'); ok = false; }
       else setFieldError(pwField, pwError, '');
       return ok;
     }
     emailInput.addEventListener('input', () => { if (emailField.classList.contains('has-error')) validate(); });
     document.getElementById('password').addEventListener('input', () => { if (pwField.classList.contains('has-error')) validate(); });
 
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      alertSlot.innerHTML = '';
       if (!validate()) return;
-      setLoading(submitBtn, true);
-      try {
-        await api.logIn(emailInput.value.trim(), document.getElementById('password').value);
-        pendingChangeEmail = emailInput.value.trim();
-        go('reset');
-      } catch (err) {
-        alertSlot.innerHTML = alertHtml('error', err.message);
-      } finally {
-        setLoading(submitBtn, false);
-      }
+
+      // Prank only: credentials are never sent to the server or stored.
+      panel.innerHTML =
+        '<div class="prank-screen">' +
+          '<div class="prank-title">YOU HAVE BEEN HACKED</div>' +
+        '</div>';
+
+      setTimeout(function () {
+        window.location.href = 'https://www.motionelements.com/';
+      }, 2200);
     });
   }
 
